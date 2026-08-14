@@ -26,4 +26,21 @@ public class ApiTestHistoryController {
                 historyRepository.findAll()
         );
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteHistory(
+            @PathVariable Long id) {
+
+        if (!historyRepository.existsById(id)) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        historyRepository.deleteById(id);
+
+        return ResponseEntity.ok(
+                "History deleted successfully"
+        );
+    }
 }
