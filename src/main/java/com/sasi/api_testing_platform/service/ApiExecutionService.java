@@ -179,29 +179,43 @@ public class ApiExecutionService {
 
         long startTime = System.currentTimeMillis();
 
-        RestClient.RequestHeadersSpec<?> requestSpec =
-                restClient
-                        .delete()
-                        .uri(buildUrl(request));
+        try {
 
-        addHeaders(requestSpec, request);
+            RestClient.RequestHeadersSpec<?> requestSpec =
+                    restClient
+                            .delete()
+                            .uri(buildUrl(request));
 
-        ResponseEntity<String> response =
-                requestSpec
-                        .retrieve()
-                        .toEntity(String.class);
+            addHeaders(requestSpec, request);
 
-        long executionTime =
-                System.currentTimeMillis() - startTime;
+            ResponseEntity<String> response =
+                    requestSpec
+                            .retrieve()
+                            .toEntity(String.class);
 
-        saveHistory(
-                request,
-                response.getStatusCode().value(),
-                response.getBody(),
-                executionTime
-        );
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
 
-        return response.getBody();
+            saveHistory(
+                    request,
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
+
+            return response.getBody();
+
+        } catch (RestClientResponseException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleApiError(
+                    request,
+                    exception,
+                    executionTime
+            );
+        }
     }
 
     // PATCH API
@@ -209,30 +223,44 @@ public class ApiExecutionService {
 
         long startTime = System.currentTimeMillis();
 
-        RestClient.RequestBodySpec requestSpec =
-                restClient
-                        .patch()
-                        .uri(buildUrl(request));
+        try {
 
-        addHeaders(requestSpec, request);
+            RestClient.RequestBodySpec requestSpec =
+                    restClient
+                            .patch()
+                            .uri(buildUrl(request));
 
-        ResponseEntity<String> response =
-                requestSpec
-                        .body(request.getBody())
-                        .retrieve()
-                        .toEntity(String.class);
+            addHeaders(requestSpec, request);
 
-        long executionTime =
-                System.currentTimeMillis() - startTime;
+            ResponseEntity<String> response =
+                    requestSpec
+                            .body(request.getBody())
+                            .retrieve()
+                            .toEntity(String.class);
 
-        saveHistory(
-                request,
-                response.getStatusCode().value(),
-                response.getBody(),
-                executionTime
-        );
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
 
-        return response.getBody();
+            saveHistory(
+                    request,
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
+
+            return response.getBody();
+
+        } catch (RestClientResponseException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleApiError(
+                    request,
+                    exception,
+                    executionTime
+            );
+        }
     }
 
     // Add custom headers
