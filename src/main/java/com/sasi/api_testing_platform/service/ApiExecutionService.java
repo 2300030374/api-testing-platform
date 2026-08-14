@@ -89,30 +89,44 @@ public class ApiExecutionService {
 
         long startTime = System.currentTimeMillis();
 
-        RestClient.RequestBodySpec requestSpec =
-                restClient
-                        .post()
-                        .uri(buildUrl(request));
+        try {
 
-        addHeaders(requestSpec, request);
+            RestClient.RequestBodySpec requestSpec =
+                    restClient
+                            .post()
+                            .uri(buildUrl(request));
 
-        ResponseEntity<String> response =
-                requestSpec
-                        .body(request.getBody())
-                        .retrieve()
-                        .toEntity(String.class);
+            addHeaders(requestSpec, request);
 
-        long executionTime =
-                System.currentTimeMillis() - startTime;
+            ResponseEntity<String> response =
+                    requestSpec
+                            .body(request.getBody())
+                            .retrieve()
+                            .toEntity(String.class);
 
-        saveHistory(
-                request,
-                response.getStatusCode().value(),
-                response.getBody(),
-                executionTime
-        );
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
 
-        return response.getBody();
+            saveHistory(
+                    request,
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
+
+            return response.getBody();
+
+        } catch (RestClientResponseException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleApiError(
+                    request,
+                    exception,
+                    executionTime
+            );
+        }
     }
 
     // PUT API
@@ -120,30 +134,44 @@ public class ApiExecutionService {
 
         long startTime = System.currentTimeMillis();
 
-        RestClient.RequestBodySpec requestSpec =
-                restClient
-                        .put()
-                        .uri(buildUrl(request));
+        try {
 
-        addHeaders(requestSpec, request);
+            RestClient.RequestBodySpec requestSpec =
+                    restClient
+                            .put()
+                            .uri(buildUrl(request));
 
-        ResponseEntity<String> response =
-                requestSpec
-                        .body(request.getBody())
-                        .retrieve()
-                        .toEntity(String.class);
+            addHeaders(requestSpec, request);
 
-        long executionTime =
-                System.currentTimeMillis() - startTime;
+            ResponseEntity<String> response =
+                    requestSpec
+                            .body(request.getBody())
+                            .retrieve()
+                            .toEntity(String.class);
 
-        saveHistory(
-                request,
-                response.getStatusCode().value(),
-                response.getBody(),
-                executionTime
-        );
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
 
-        return response.getBody();
+            saveHistory(
+                    request,
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
+
+            return response.getBody();
+
+        } catch (RestClientResponseException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleApiError(
+                    request,
+                    exception,
+                    executionTime
+            );
+        }
     }
 
     // DELETE API
