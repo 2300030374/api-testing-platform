@@ -35,6 +35,13 @@ public class ApiTestingController {
 
             return ResponseEntity.ok(response);
         }
+        if ("PUT".equalsIgnoreCase(request.getMethod())) {
+
+            String response =
+                    apiExecutionService.executePut(request);
+
+            return ResponseEntity.ok(response);
+        }
 
         return ResponseEntity
                 .badRequest()

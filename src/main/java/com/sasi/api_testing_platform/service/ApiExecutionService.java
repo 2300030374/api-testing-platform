@@ -36,4 +36,16 @@ public class ApiExecutionService {
 
         return response.getBody();
     }
+    public String executePut(ApiRequest request) {
+
+        ResponseEntity<String> response = restClient
+                .put()
+                .uri(request.getUrl())
+                .header("Content-Type", "application/json")
+                .body(request.getBody())
+                .retrieve()
+                .toEntity(String.class);
+
+        return response.getBody();
+    }
 }
