@@ -65,4 +65,17 @@ public class ApiExecutionService {
 
         return response.getBody();
     }
+    // PATCH API
+    public String executePatch(ApiRequest request) {
+
+        ResponseEntity<String> response = restClient
+                .patch()
+                .uri(request.getUrl())
+                .header("Content-Type", "application/json")
+                .body(request.getBody())
+                .retrieve()
+                .toEntity(String.class);
+
+        return response.getBody();
+    }
 }

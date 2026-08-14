@@ -52,6 +52,14 @@ public class ApiTestingController {
             return ResponseEntity.ok(response);
         }
 
+        if ("PATCH".equalsIgnoreCase(request.getMethod())) {
+
+            String response =
+                    apiExecutionService.executePatch(request);
+
+            return ResponseEntity.ok(response);
+        }
+
         return ResponseEntity
                 .badRequest()
                 .body("Unsupported HTTP method: " + request.getMethod());
