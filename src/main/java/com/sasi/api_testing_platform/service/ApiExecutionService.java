@@ -24,4 +24,16 @@ public class ApiExecutionService {
 
         return response.getBody();
     }
+    public String executePost(ApiRequest request) {
+
+        ResponseEntity<String> response = restClient
+                .post()
+                .uri(request.getUrl())
+                .header("Content-Type", "application/json")
+                .body(request.getBody())
+                .retrieve()
+                .toEntity(String.class);
+
+        return response.getBody();
+    }
 }

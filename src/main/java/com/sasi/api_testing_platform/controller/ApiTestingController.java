@@ -20,9 +20,24 @@ public class ApiTestingController {
     public ResponseEntity<String> executeApi(
             @RequestBody ApiRequest request) {
 
-        String response =
-                apiExecutionService.executeGet(request);
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
 
-        return ResponseEntity.ok(response);
+            String response =
+                    apiExecutionService.executeGet(request);
+
+            return ResponseEntity.ok(response);
+        }
+
+        if ("POST".equalsIgnoreCase(request.getMethod())) {
+
+            String response =
+                    apiExecutionService.executePost(request);
+
+            return ResponseEntity.ok(response);
+        }
+
+        return ResponseEntity
+                .badRequest()
+                .body("Unsupported HTTP method: " + request.getMethod());
     }
 }
