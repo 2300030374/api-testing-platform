@@ -14,6 +14,7 @@ public class ApiExecutionService {
         this.restClient = builder.build();
     }
 
+    // GET API
     public String executeGet(ApiRequest request) {
 
         ResponseEntity<String> response = restClient
@@ -24,6 +25,8 @@ public class ApiExecutionService {
 
         return response.getBody();
     }
+
+    // POST API
     public String executePost(ApiRequest request) {
 
         ResponseEntity<String> response = restClient
@@ -36,6 +39,8 @@ public class ApiExecutionService {
 
         return response.getBody();
     }
+
+    // PUT API
     public String executePut(ApiRequest request) {
 
         ResponseEntity<String> response = restClient
@@ -43,6 +48,18 @@ public class ApiExecutionService {
                 .uri(request.getUrl())
                 .header("Content-Type", "application/json")
                 .body(request.getBody())
+                .retrieve()
+                .toEntity(String.class);
+
+        return response.getBody();
+    }
+
+    // DELETE API
+    public String executeDelete(ApiRequest request) {
+
+        ResponseEntity<String> response = restClient
+                .delete()
+                .uri(request.getUrl())
                 .retrieve()
                 .toEntity(String.class);
 
