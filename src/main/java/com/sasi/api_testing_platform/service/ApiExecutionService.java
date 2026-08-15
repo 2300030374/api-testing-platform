@@ -4,7 +4,7 @@ import com.sasi.api_testing_platform.dto.ApiExecutionResponse;
 import com.sasi.api_testing_platform.dto.ApiRequest;
 import com.sasi.api_testing_platform.entity.ApiTestHistory;
 import com.sasi.api_testing_platform.repository.ApiTestHistoryRepository;
-
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -145,6 +145,24 @@ public class ApiExecutionService {
             return handleApiError(
                     request,
                     exception,
+                    executionTime
+            );
+        }
+        catch (ResourceAccessException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            saveHistory(
+                    request,
+                    0,
+                    exception.getMessage(),
+                    executionTime
+            );
+
+            return new ApiExecutionResponse(
+                    0,
+                    exception.getMessage(),
                     executionTime
             );
         }

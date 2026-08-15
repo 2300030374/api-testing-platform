@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
 
             String email = jwtService.extractEmail(token);
-
+            System.out.println("JWT EMAIL = " + email);
             if (email != null &&
                     SecurityContextHolder.getContext()
                             .getAuthentication() == null) {
