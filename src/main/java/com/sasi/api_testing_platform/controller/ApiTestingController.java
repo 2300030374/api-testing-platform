@@ -1,10 +1,11 @@
 package com.sasi.api_testing_platform.controller;
 
-import com.sasi.api_testing_platform.dto.ApiExecutionResponse;
 import com.sasi.api_testing_platform.dto.ApiRequest;
 import com.sasi.api_testing_platform.service.ApiExecutionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/testing")
@@ -20,7 +21,39 @@ public class ApiTestingController {
     public ResponseEntity<?> executeApi(
             @RequestBody ApiRequest request) {
 
-        String method = request.getMethod().toUpperCase();
+        // Step 150: Validate URL
+        if (request.getUrl() == null ||
+                request.getUrl().isBlank()) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("URL is required");
+        }
+
+        // Step 151: Validate HTTP method
+        if (request.getMethod() == null ||
+                request.getMethod().isBlank()) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("HTTP method is required");
+        }
+
+        // Step 152: Normalize HTTP method
+        String method =
+                request.getMethod()
+                        .trim()
+                        .toUpperCase();
+
+        // Step 153: Validate URL format
+        try {
+            URI.create(request.getUrl());
+        } catch (IllegalArgumentException exception) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("Invalid URL");
+        }
 
         switch (method) {
 
