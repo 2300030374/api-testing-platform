@@ -4,9 +4,10 @@ import com.sasi.api_testing_platform.dto.ApiExecutionResponse;
 import com.sasi.api_testing_platform.dto.ApiRequest;
 import com.sasi.api_testing_platform.entity.ApiTestHistory;
 import com.sasi.api_testing_platform.repository.ApiTestHistoryRepository;
-import org.springframework.web.client.ResourceAccessException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -95,6 +96,17 @@ public class ApiExecutionService {
                     exception,
                     executionTime
             );
+
+        } catch (ResourceAccessException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleConnectionError(
+                    request,
+                    exception,
+                    executionTime
+            );
         }
     }
 
@@ -117,7 +129,11 @@ public class ApiExecutionService {
 
             ResponseEntity<String> response =
                     requestSpec
-                            .body(request.getBody() == null ? "" : request.getBody())
+                            .body(
+                                    request.getBody() == null
+                                            ? ""
+                                            : request.getBody()
+                            )
                             .retrieve()
                             .toEntity(String.class);
 
@@ -147,22 +163,15 @@ public class ApiExecutionService {
                     exception,
                     executionTime
             );
-        }
-        catch (ResourceAccessException exception) {
+
+        } catch (ResourceAccessException exception) {
 
             long executionTime =
                     System.currentTimeMillis() - startTime;
 
-            saveHistory(
+            return handleConnectionError(
                     request,
-                    0,
-                    exception.getMessage(),
-                    executionTime
-            );
-
-            return new ApiExecutionResponse(
-                    0,
-                    exception.getMessage(),
+                    exception,
                     executionTime
             );
         }
@@ -187,7 +196,11 @@ public class ApiExecutionService {
 
             ResponseEntity<String> response =
                     requestSpec
-                            .body(request.getBody() == null ? "" : request.getBody())
+                            .body(
+                                    request.getBody() == null
+                                            ? ""
+                                            : request.getBody()
+                            )
                             .retrieve()
                             .toEntity(String.class);
 
@@ -213,6 +226,17 @@ public class ApiExecutionService {
                     System.currentTimeMillis() - startTime;
 
             return handleApiError(
+                    request,
+                    exception,
+                    executionTime
+            );
+
+        } catch (ResourceAccessException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleConnectionError(
                     request,
                     exception,
                     executionTime
@@ -268,6 +292,17 @@ public class ApiExecutionService {
                     exception,
                     executionTime
             );
+
+        } catch (ResourceAccessException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleConnectionError(
+                    request,
+                    exception,
+                    executionTime
+            );
         }
     }
 
@@ -290,7 +325,11 @@ public class ApiExecutionService {
 
             ResponseEntity<String> response =
                     requestSpec
-                            .body(request.getBody() == null ? "" : request.getBody())
+                            .body(
+                                    request.getBody() == null
+                                            ? ""
+                                            : request.getBody()
+                            )
                             .retrieve()
                             .toEntity(String.class);
 
@@ -320,6 +359,79 @@ public class ApiExecutionService {
                     exception,
                     executionTime
             );
+
+        } catch (ResourceAccessException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleConnectionError(
+                    request,
+                    exception,
+                    executionTime
+            );
+        }
+    }
+
+    // =========================================================
+    // HEAD API
+    // =========================================================
+
+    public ApiExecutionResponse executeHead(ApiRequest request) {
+
+        long startTime = System.currentTimeMillis();
+
+        try {
+
+            RestClient.RequestHeadersSpec<?> requestSpec =
+                    restClient
+                            .head()
+                            .uri(buildUrl(request));
+
+            addHeaders(requestSpec, request);
+
+            ResponseEntity<Void> response =
+                    requestSpec
+                            .retrieve()
+                            .toBodilessEntity();
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            saveHistory(
+                    request,
+                    response.getStatusCode().value(),
+                    "",
+                    executionTime
+            );
+
+            return new ApiExecutionResponse(
+                    response.getStatusCode().value(),
+                    "",
+                    executionTime
+            );
+
+        } catch (RestClientResponseException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleApiError(
+                    request,
+                    exception,
+                    executionTime
+            );
+
+        } catch (ResourceAccessException exception) {
+
+            long executionTime =
+                    System.currentTimeMillis() - startTime;
+
+            return handleConnectionError(
+                    request,
+                    exception,
+                    executionTime
+            );
         }
     }
 
@@ -340,7 +452,7 @@ public class ApiExecutionService {
     }
 
     // =========================================================
-    // HANDLE API ERROR
+    // HANDLE HTTP API ERROR
     // =========================================================
 
     private ApiExecutionResponse handleApiError(
@@ -364,6 +476,32 @@ public class ApiExecutionService {
         return new ApiExecutionResponse(
                 statusCode,
                 responseBody,
+                executionTime
+        );
+    }
+
+    // =========================================================
+    // HANDLE CONNECTION ERROR
+    // =========================================================
+
+    private ApiExecutionResponse handleConnectionError(
+            ApiRequest request,
+            ResourceAccessException exception,
+            long executionTime) {
+
+        String errorMessage =
+                exception.getMessage();
+
+        saveHistory(
+                request,
+                0,
+                errorMessage,
+                executionTime
+        );
+
+        return new ApiExecutionResponse(
+                0,
+                errorMessage,
                 executionTime
         );
     }

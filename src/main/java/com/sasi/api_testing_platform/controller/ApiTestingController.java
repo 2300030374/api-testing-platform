@@ -81,6 +81,10 @@ public class ApiTestingController {
                 return ResponseEntity.ok(
                         apiExecutionService.executePatch(request)
                 );
+            case "HEAD":
+                return ResponseEntity.ok(
+                        apiExecutionService.executeHead(request)
+                );
 
             default:
                 return ResponseEntity
