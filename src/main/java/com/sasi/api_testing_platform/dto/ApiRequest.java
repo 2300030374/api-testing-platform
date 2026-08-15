@@ -11,6 +11,7 @@ public class ApiRequest {
     private Map<String, String> queryParams;
 
     public ApiRequest() {
+        this.body = "";
     }
 
     public String getUrl() {

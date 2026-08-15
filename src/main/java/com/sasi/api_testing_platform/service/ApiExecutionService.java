@@ -117,7 +117,7 @@ public class ApiExecutionService {
 
             ResponseEntity<String> response =
                     requestSpec
-                            .body(request.getBody())
+                            .body(request.getBody() == null ? "" : request.getBody())
                             .retrieve()
                             .toEntity(String.class);
 
@@ -169,7 +169,7 @@ public class ApiExecutionService {
 
             ResponseEntity<String> response =
                     requestSpec
-                            .body(request.getBody())
+                            .body(request.getBody() == null ? "" : request.getBody())
                             .retrieve()
                             .toEntity(String.class);
 
@@ -272,7 +272,7 @@ public class ApiExecutionService {
 
             ResponseEntity<String> response =
                     requestSpec
-                            .body(request.getBody())
+                            .body(request.getBody() == null ? "" : request.getBody())
                             .retrieve()
                             .toEntity(String.class);
 
