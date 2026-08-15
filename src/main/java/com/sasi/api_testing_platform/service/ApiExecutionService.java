@@ -1,13 +1,16 @@
 package com.sasi.api_testing_platform.service;
 
+import com.sasi.api_testing_platform.dto.ApiExecutionResponse;
 import com.sasi.api_testing_platform.dto.ApiRequest;
 import com.sasi.api_testing_platform.entity.ApiTestHistory;
 import com.sasi.api_testing_platform.repository.ApiTestHistoryRepository;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -25,13 +28,17 @@ public class ApiExecutionService {
         this.historyRepository = historyRepository;
     }
 
-    // Build URL with query parameters
+    // =========================================================
+    // BUILD URL WITH QUERY PARAMETERS
+    // =========================================================
+
     private String buildUrl(ApiRequest request) {
 
         UriComponentsBuilder builder =
                 UriComponentsBuilder.fromUriString(request.getUrl());
 
-        Map<String, String> queryParams = request.getQueryParams();
+        Map<String, String> queryParams =
+                request.getQueryParams();
 
         if (queryParams != null) {
             queryParams.forEach(builder::queryParam);
@@ -40,8 +47,11 @@ public class ApiExecutionService {
         return builder.toUriString();
     }
 
+    // =========================================================
     // GET API
-    public String executeGet(ApiRequest request) {
+    // =========================================================
+
+    public ApiExecutionResponse executeGet(ApiRequest request) {
 
         long startTime = System.currentTimeMillis();
 
@@ -69,7 +79,11 @@ public class ApiExecutionService {
                     executionTime
             );
 
-            return response.getBody();
+            return new ApiExecutionResponse(
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
 
         } catch (RestClientResponseException exception) {
 
@@ -84,8 +98,11 @@ public class ApiExecutionService {
         }
     }
 
+    // =========================================================
     // POST API
-    public String executePost(ApiRequest request) {
+    // =========================================================
+
+    public ApiExecutionResponse executePost(ApiRequest request) {
 
         long startTime = System.currentTimeMillis();
 
@@ -114,7 +131,11 @@ public class ApiExecutionService {
                     executionTime
             );
 
-            return response.getBody();
+            return new ApiExecutionResponse(
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
 
         } catch (RestClientResponseException exception) {
 
@@ -129,8 +150,11 @@ public class ApiExecutionService {
         }
     }
 
+    // =========================================================
     // PUT API
-    public String executePut(ApiRequest request) {
+    // =========================================================
+
+    public ApiExecutionResponse executePut(ApiRequest request) {
 
         long startTime = System.currentTimeMillis();
 
@@ -159,7 +183,11 @@ public class ApiExecutionService {
                     executionTime
             );
 
-            return response.getBody();
+            return new ApiExecutionResponse(
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
 
         } catch (RestClientResponseException exception) {
 
@@ -174,8 +202,11 @@ public class ApiExecutionService {
         }
     }
 
+    // =========================================================
     // DELETE API
-    public String executeDelete(ApiRequest request) {
+    // =========================================================
+
+    public ApiExecutionResponse executeDelete(ApiRequest request) {
 
         long startTime = System.currentTimeMillis();
 
@@ -203,7 +234,11 @@ public class ApiExecutionService {
                     executionTime
             );
 
-            return response.getBody();
+            return new ApiExecutionResponse(
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
 
         } catch (RestClientResponseException exception) {
 
@@ -218,8 +253,11 @@ public class ApiExecutionService {
         }
     }
 
+    // =========================================================
     // PATCH API
-    public String executePatch(ApiRequest request) {
+    // =========================================================
+
+    public ApiExecutionResponse executePatch(ApiRequest request) {
 
         long startTime = System.currentTimeMillis();
 
@@ -248,7 +286,11 @@ public class ApiExecutionService {
                     executionTime
             );
 
-            return response.getBody();
+            return new ApiExecutionResponse(
+                    response.getStatusCode().value(),
+                    response.getBody(),
+                    executionTime
+            );
 
         } catch (RestClientResponseException exception) {
 
@@ -263,7 +305,10 @@ public class ApiExecutionService {
         }
     }
 
-    // Add custom headers
+    // =========================================================
+    // ADD CUSTOM HEADERS
+    // =========================================================
+
     private void addHeaders(
             RestClient.RequestHeadersSpec<?> requestSpec,
             ApiRequest request) {
@@ -275,14 +320,21 @@ public class ApiExecutionService {
             );
         }
     }
-    private String handleApiError(
+
+    // =========================================================
+    // HANDLE API ERROR
+    // =========================================================
+
+    private ApiExecutionResponse handleApiError(
             ApiRequest request,
             RestClientResponseException exception,
             long executionTime) {
 
-        int statusCode = exception.getStatusCode().value();
+        int statusCode =
+                exception.getStatusCode().value();
 
-        String responseBody = exception.getResponseBodyAsString();
+        String responseBody =
+                exception.getResponseBodyAsString();
 
         saveHistory(
                 request,
@@ -291,16 +343,25 @@ public class ApiExecutionService {
                 executionTime
         );
 
-        return responseBody;
+        return new ApiExecutionResponse(
+                statusCode,
+                responseBody,
+                executionTime
+        );
     }
-    // Save API execution history
+
+    // =========================================================
+    // SAVE API EXECUTION HISTORY
+    // =========================================================
+
     private void saveHistory(
             ApiRequest request,
             int statusCode,
             String responseBody,
             long executionTime) {
 
-        ApiTestHistory history = new ApiTestHistory();
+        ApiTestHistory history =
+                new ApiTestHistory();
 
         history.setUrl(request.getUrl());
         history.setMethod(request.getMethod());

@@ -1,5 +1,6 @@
 package com.sasi.api_testing_platform.controller;
 
+import com.sasi.api_testing_platform.dto.ApiExecutionResponse;
 import com.sasi.api_testing_platform.dto.ApiRequest;
 import com.sasi.api_testing_platform.service.ApiExecutionService;
 import org.springframework.http.ResponseEntity;
@@ -11,57 +12,47 @@ public class ApiTestingController {
 
     private final ApiExecutionService apiExecutionService;
 
-    public ApiTestingController(
-            ApiExecutionService apiExecutionService) {
+    public ApiTestingController(ApiExecutionService apiExecutionService) {
         this.apiExecutionService = apiExecutionService;
     }
 
     @PostMapping("/execute")
-    public ResponseEntity<String> executeApi(
+    public ResponseEntity<?> executeApi(
             @RequestBody ApiRequest request) {
 
-        if ("GET".equalsIgnoreCase(request.getMethod())) {
+        String method = request.getMethod().toUpperCase();
 
-            String response =
-                    apiExecutionService.executeGet(request);
+        switch (method) {
 
-            return ResponseEntity.ok(response);
+            case "GET":
+                return ResponseEntity.ok(
+                        apiExecutionService.executeGet(request)
+                );
+
+            case "POST":
+                return ResponseEntity.ok(
+                        apiExecutionService.executePost(request)
+                );
+
+            case "PUT":
+                return ResponseEntity.ok(
+                        apiExecutionService.executePut(request)
+                );
+
+            case "DELETE":
+                return ResponseEntity.ok(
+                        apiExecutionService.executeDelete(request)
+                );
+
+            case "PATCH":
+                return ResponseEntity.ok(
+                        apiExecutionService.executePatch(request)
+                );
+
+            default:
+                return ResponseEntity
+                        .badRequest()
+                        .body("Unsupported HTTP method: " + method);
         }
-
-        if ("POST".equalsIgnoreCase(request.getMethod())) {
-
-            String response =
-                    apiExecutionService.executePost(request);
-
-            return ResponseEntity.ok(response);
-        }
-
-        if ("PUT".equalsIgnoreCase(request.getMethod())) {
-
-            String response =
-                    apiExecutionService.executePut(request);
-
-            return ResponseEntity.ok(response);
-        }
-
-        if ("DELETE".equalsIgnoreCase(request.getMethod())) {
-
-            String response =
-                    apiExecutionService.executeDelete(request);
-
-            return ResponseEntity.ok(response);
-        }
-
-        if ("PATCH".equalsIgnoreCase(request.getMethod())) {
-
-            String response =
-                    apiExecutionService.executePatch(request);
-
-            return ResponseEntity.ok(response);
-        }
-
-        return ResponseEntity
-                .badRequest()
-                .body("Unsupported HTTP method: " + request.getMethod());
     }
 }
